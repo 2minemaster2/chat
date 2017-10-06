@@ -2,8 +2,8 @@ defmodule Chat.RegistryTest do
   use ExUnit.Case, async: true
 
   setup context do
-    {:ok, registry} = start_supervised({Chat.Registry, name: context.test})
-    %{registry: registry}
+    {:ok, _} = start_supervised({Chat.Registry, name: context.test})
+    %{registry: context.test}
   end
 
   test "spawns buckets", %{registry: registry} do
