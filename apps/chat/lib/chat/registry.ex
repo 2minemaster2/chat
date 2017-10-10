@@ -27,7 +27,7 @@ defmodule Chat.Registry do
   Ensures there is a bucket associated with the given `name` in `server`.
   """
   def create(server, name) do
-    GenServer.cast(server, {:create, name})
+    GenServer.call(server, {:create, name})
   end
 
   @doc """
@@ -48,7 +48,7 @@ defmodule Chat.Registry do
     {:ok, {names, refs}}
   end
 
-  def handle_call({:create, name}, {names, refs}) do
+  def handle_call({:create, name}, _from, {names, refs}) do
     case lookup(names, name) do
       {:ok, pid} ->
         {:reply, pid, {names, refs}}
@@ -58,19 +58,6 @@ defmodule Chat.Registry do
         refs = Map.put(refs, ref, name)
         :ets.insert(names, {name, pid})
         {:reply, pid, {names, refs}}
-    end
-  end
-
-  def handle_cast({:create, name}, {names, refs}) do
-    case lookup(names, name) do
-      {:ok, _pid} ->
-        {:noreply, {names, refs}}
-      :error ->
-        {:ok, pid} = Chat.BucketSupervisor.start_bucket()
-        ref = Process.monitor(pid)
-        refs = Map.put(refs, ref, name)
-        :ets.insert(names, {name, pid})
-        {:noreply, {names, refs}}
     end
   end
 
