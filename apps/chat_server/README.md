@@ -1,4 +1,4 @@
-# ChatSever
+# ChatServer
 
 **TODO: Add description**
 
